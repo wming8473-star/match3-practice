@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.3</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.4</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -144,18 +144,10 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 .fruit[data-f="🍌"]{background-image:url("fruit-banana.svg")!important;width:94%!important;height:88%!important}
 .fruit[data-f="🫐"]{background-image:url("fruit-blueberry.svg")!important;width:90%!important;height:90%!important}
 .fruit[data-f="🥑"]{background-image:url("fruit-avocado.svg")!important;width:86%!important;height:94%!important}
-</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.3</div><div class="sub">独立水果稳定版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.4</div><div class="sub">原版音乐版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
-(function(){var audioCtx=null,musicTimer=null,musicStep=0;
-function startMusic(){try{
-var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-if(!audioCtx)audioCtx=new AC();if(audioCtx.state=="suspended")audioCtx.resume();if(musicTimer)return;
-var lead=[523.25,659.25,783.99,659.25,587.33,698.46,880,783.99,659.25,587.33,523.25,587.33,659.25,783.99,698.46,587.33];
-var bass=[130.81,130.81,146.83,146.83,110,110,130.81,130.81];
-function tone(freq,when,dur,type,vol){var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,when);g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(vol,when+.025);g.gain.exponentialRampToValueAtTime(.0001,when+dur);o.connect(g);g.connect(audioCtx.destination);o.start(when);o.stop(when+dur+.03)}
-function tick(){if(!audioCtx)return;var t=audioCtx.currentTime,n=musicStep%lead.length;tone(lead[n],t,.31,"triangle",.045);tone(lead[n]/2,t,.27,"sine",.018);if(n%2==0)tone(bass[Math.floor(n/2)%bass.length],t,.5,"triangle",.022);if(n%4==2)tone(lead[n]*1.5,t+.06,.18,"sine",.012);musicStep++}
-tick();musicTimer=setInterval(tick,360);
-}catch(err){}}
+(function(){var music=new Audio("assets/music-loop.m4a?v=1");music.loop=true;music.preload="auto";music.volume=.72;
+function startMusic(){try{var p=music.play();if(p&&p.catch)p.catch(function(){});}catch(err){}}
 
 
 var R=10,C=8,T=["🍓","🍑","🍌","🫐","🥑"],board=document.getElementById("board"),scoreEl=document.getElementById("score"),timeEl=document.getElementById("time"),overlay=document.getElementById("overlay"),countEl=document.getElementById("count");
