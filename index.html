@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.8</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.9</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -158,7 +158,17 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 .cell.special.starV .fruit{background-image:url("assets/confirmed-row2.webp?v=67")!important;background-position:0% 50%!important}
 .cell.special.starH .fruit{background-image:url("assets/confirmed-row2.webp?v=67")!important;background-position:50% 50%!important}
 .cell.special.heart .fruit{background-image:url("assets/confirmed-row2.webp?v=67")!important;background-position:100% 50%!important}
-</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.8</div><div class="sub">正式开局版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+</style><style id="v69-motion">
+/* V6.9 motion: original-game-like clear sparkle + falling refill */
+.cell.pop .fruit{animation:v69clear .30s ease-out forwards!important}
+@keyframes v69clear{0%{transform:scale(1);opacity:1;filter:brightness(1)}35%{transform:scale(1.16);opacity:1;filter:brightness(1.8) drop-shadow(0 0 7px #fff)}70%{transform:scale(.72);opacity:.75;filter:brightness(2.2) drop-shadow(0 0 12px #fff)}100%{transform:scale(.12);opacity:0;filter:brightness(2.6)}}
+.cell.dropin .fruit{animation:v69drop .24s cubic-bezier(.18,.72,.28,1.12) both!important}
+@keyframes v69drop{0%{transform:translateY(-72px) scale(.92);opacity:.35}75%{transform:translateY(4px) scale(1.02);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+.cell.swapflash .fruit{animation:v69hit .18s ease-out}
+@keyframes v69hit{50%{transform:scale(1.08);filter:brightness(1.35)}}
+.spark{position:absolute;z-index:30;width:8px;height:8px;border-radius:50%;background:#fff;pointer-events:none;box-shadow:0 0 7px #fff;animation:v69spark .34s ease-out forwards}
+@keyframes v69spark{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}100%{transform:translate(var(--sx),var(--sy)) scale(.05);opacity:0}}
+</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.9</div><div class="sub">消除动画版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
 (function(){var music=new Audio("assets/music-loop.m4a?v=1");music.loop=true;music.preload="auto";music.volume=.72;
 function startMusic(){try{var p=music.play();if(p&&p.catch)p.catch(function(){});}catch(err){}}
@@ -186,7 +196,9 @@ if(!best){for(i=0;i<hs.length;i++)if(hs[i].n==4){c=(pr==hs[i].r&&pc>=hs[i].s&&pc
 if(!best){for(i=0;i<vs.length;i++)if(vs[i].n==4){r=(pc==vs[i].c&&pr>=vs[i].s&&pr<=vs[i].e)?pr:Math.floor((vs[i].s+vs[i].e)/2);best={r:r,c:vs[i].c,s:"starV"};break}}
 if(best){hit[best.r*C+best.c]=false;spec[best.r][best.c]=best.s}
 return best}
-function resolve(done,pr,pc){var hit=scan();if(!any(hit)){draw();if(done)done();return}makeSpecial(hit,pr,pc);var cells=board.querySelectorAll(".cell");for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i])cells[i].className+=" pop";setTimeout(function(){fall(hit);draw();setTimeout(function(){resolve(done,-1,-1)},205)},245)}
+function sparkle(hit){var cells=board.querySelectorAll(".cell");for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i]){var r=cells[i].getBoundingClientRect(),b=board.getBoundingClientRect();for(var k=0;k<3;k++){var s=document.createElement("i");s.className="spark";s.style.left=(r.left-b.left+r.width/2)+"px";s.style.top=(r.top-b.top+r.height/2)+"px";s.style.setProperty("--sx",((k-1)*18)+"px");s.style.setProperty("--sy",((k%2?1:-1)*16)+"px");board.appendChild(s)}}}
+function markDrop(){var cells=board.querySelectorAll(".cell");for(var i=0;i<cells.length;i++)cells[i].className+=" dropin"}
+function resolve(done,pr,pc){var hit=scan();if(!any(hit)){draw();if(done)done();return}makeSpecial(hit,pr,pc);var cells=board.querySelectorAll(".cell");sparkle(hit);for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i])cells[i].className+=" pop";setTimeout(function(){fall(hit);draw();markDrop();setTimeout(function(){resolve(done,-1,-1)},270)},300)}
 function combo(r1,c1,r2,c2){var s1=spec[r1][c1],s2=spec[r2][c2],hit=[],i,r,c,x,y;for(i=0;i<R*C;i++)hit[i]=false;hit[r1*C+c1]=true;hit[r2*C+c2]=true;
 if(s1=="heart"&&s2=="heart"){for(i=0;i<R*C;i++)hit[i]=true}
 else if(s1=="heart"||s2=="heart"){var hr=s1=="heart"?r1:r2,hc=s1=="heart"?c1:c2,or=s1=="heart"?r2:r1,oc=s1=="heart"?c2:c1,os=spec[or][oc],typ=grid[or][oc];if(os){var made=0;for(r=0;r<R&&made<8;r++)for(c=0;c<C&&made<8;c++)if(!spec[r][c]&&Math.random()<0.22){spec[r][c]=os;hit[r*C+c]=true;made++}}else{for(r=0;r<R;r++)for(c=0;c<C;c++)if(grid[r][c]==typ)hit[r*C+c]=true}}
