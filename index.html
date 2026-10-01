@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.9</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.10</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -168,7 +168,16 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 @keyframes v69hit{50%{transform:scale(1.08);filter:brightness(1.35)}}
 .spark{position:absolute;z-index:30;width:8px;height:8px;border-radius:50%;background:#fff;pointer-events:none;box-shadow:0 0 7px #fff;animation:v69spark .34s ease-out forwards}
 @keyframes v69spark{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}100%{transform:translate(var(--sx),var(--sy)) scale(.05);opacity:0}}
-</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.9</div><div class="sub">消除动画版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+</style><style id="v610-special-fx">
+.fxbeam,.fxburst,.fxheartwash{position:absolute;z-index:29;pointer-events:none}
+.fxbeam{background:linear-gradient(90deg,transparent,#fff 18%,#8eeeff 45%,#fff 72%,transparent);box-shadow:0 0 10px #fff,0 0 20px #75cfff;animation:fxbeam .34s ease-out forwards}
+.fxbeam.h{left:0;width:100%;height:13px}.fxbeam.v{top:0;height:100%;width:13px;background:linear-gradient(180deg,transparent,#fff 18%,#8eeeff 45%,#fff 72%,transparent)}
+@keyframes fxbeam{0%{opacity:0;filter:blur(7px);transform:scale(.25)}35%{opacity:1;filter:blur(1px);transform:scale(1.05)}100%{opacity:0;filter:blur(5px);transform:scale(1.18)}}
+.fxburst{width:0;height:0;border-radius:50%;box-shadow:0 0 12px 9px #fff,0 0 28px 18px #a26cff,0 0 42px 27px #65dfff;animation:fxburst .42s ease-out forwards}
+@keyframes fxburst{0%{transform:scale(.15);opacity:1}100%{transform:scale(3.2);opacity:0}}
+.fxheartwash{inset:0;background:radial-gradient(circle,#fff9 0 5%,#ff7fcb77 22%,#7ccfff44 48%,transparent 72%);animation:fxheart .48s ease-out forwards}
+@keyframes fxheart{0%{opacity:0;transform:scale(.35)}40%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
+</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.10</div><div class="sub">特效消除动画版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
 (function(){var music=new Audio("assets/music-loop.m4a?v=1");music.loop=true;music.preload="auto";music.volume=.72;
 function startMusic(){try{var p=music.play();if(p&&p.catch)p.catch(function(){});}catch(err){}}
@@ -199,7 +208,11 @@ return best}
 function sparkle(hit){var cells=board.querySelectorAll(".cell");for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i]){var r=cells[i].getBoundingClientRect(),b=board.getBoundingClientRect();for(var k=0;k<3;k++){var s=document.createElement("i");s.className="spark";s.style.left=(r.left-b.left+r.width/2)+"px";s.style.top=(r.top-b.top+r.height/2)+"px";s.style.setProperty("--sx",((k-1)*18)+"px");s.style.setProperty("--sy",((k%2?1:-1)*16)+"px");board.appendChild(s)}}}
 function markDrop(){var cells=board.querySelectorAll(".cell");for(var i=0;i<cells.length;i++)cells[i].className+=" dropin"}
 function resolve(done,pr,pc){var hit=scan();if(!any(hit)){draw();if(done)done();return}makeSpecial(hit,pr,pc);var cells=board.querySelectorAll(".cell");sparkle(hit);for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i])cells[i].className+=" pop";setTimeout(function(){fall(hit);draw();markDrop();setTimeout(function(){resolve(done,-1,-1)},270)},300)}
-function combo(r1,c1,r2,c2){var s1=spec[r1][c1],s2=spec[r2][c2],hit=[],i,r,c,x,y;for(i=0;i<R*C;i++)hit[i]=false;hit[r1*C+c1]=true;hit[r2*C+c2]=true;
+function addBeam(r,c,dir){var e=document.createElement("i");e.className="fxbeam "+dir;if(dir=="h"){e.style.top=((r+.5)*10)+"%"}else{e.style.left=((c+.5)*12.5)+"%"}board.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},430)}
+function addBurst(r,c){var e=document.createElement("i");e.className="fxburst";e.style.left=((c+.5)*12.5)+"%";e.style.top=((r+.5)*10)+"%";board.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},500)}
+function addHeartWash(){var e=document.createElement("i");e.className="fxheartwash";board.appendChild(e);setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},560)}
+function specialFX(r1,c1,r2,c2){var a=spec[r1][c1],b=spec[r2][c2],s=a||b,rr=a?r1:r2,cc=a?c1:c2;if(a=="heart"||b=="heart"){addHeartWash()}if(a=="bomb")addBurst(r1,c1);if(b=="bomb")addBurst(r2,c2);if(a=="starH")addBeam(r1,c1,"h");if(b=="starH")addBeam(r2,c2,"h");if(a=="starV")addBeam(r1,c1,"v");if(b=="starV")addBeam(r2,c2,"v")}
+function combo(r1,c1,r2,c2){specialFX(r1,c1,r2,c2);var s1=spec[r1][c1],s2=spec[r2][c2],hit=[],i,r,c,x,y;for(i=0;i<R*C;i++)hit[i]=false;hit[r1*C+c1]=true;hit[r2*C+c2]=true;
 if(s1=="heart"&&s2=="heart"){for(i=0;i<R*C;i++)hit[i]=true}
 else if(s1=="heart"||s2=="heart"){var hr=s1=="heart"?r1:r2,hc=s1=="heart"?c1:c2,or=s1=="heart"?r2:r1,oc=s1=="heart"?c2:c1,os=spec[or][oc],typ=grid[or][oc];if(os){var made=0;for(r=0;r<R&&made<8;r++)for(c=0;c<C&&made<8;c++)if(!spec[r][c]&&Math.random()<0.22){spec[r][c]=os;hit[r*C+c]=true;made++}}else{for(r=0;r<R;r++)for(c=0;c<C;c++)if(grid[r][c]==typ)hit[r*C+c]=true}}
 else if((s1=="bomb"&&(s2=="starH"||s2=="starV"))||(s2=="bomb"&&(s1=="starH"||s1=="starV"))){var br=s1=="bomb"?r1:r2,bc=s1=="bomb"?c1:c2,ss=s1=="bomb"?s2:s1;if(ss=="starH"){for(y=Math.max(0,br-1);y<=Math.min(R-1,br+1);y++)for(x=0;x<C;x++)hit[y*C+x]=true}else{for(x=Math.max(0,bc-1);x<=Math.min(C-1,bc+1);x++)for(y=0;y<R;y++)hit[y*C+x]=true}}
