@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.7</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.8</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -25,61 +25,26 @@
 .starH .fruit:before{content:"↔"}.starV .fruit:before{content:"↕"}
 .heart .fruit:after{content:"♥";font-size:45px;line-height:1;background:conic-gradient(from 20deg,#ff4242,#ffd94a,#55e87c,#3edcff,#7858ff,#ff55bc,#ff4242);-webkit-background-clip:text;color:transparent;-webkit-text-stroke:2px #fff9;filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 9px #79a8ff)}
 .wave{position:absolute;z-index:15;pointer-events:none;background:#fff9;box-shadow:0 0 16px #fff,0 0 28px #7df;animation:wave .3s ease-out forwards}.wave.h{left:0;width:100%;height:8%;transform:translateY(-50%)}.wave.v{top:0;height:100%;width:10%;transform:translateX(-50%)}@keyframes wave{0%{opacity:0;filter:blur(10px)}35%{opacity:1}100%{opacity:0;filter:blur(1px)}}
-#debug{position:fixed;left:8px;right:8px;bottom:76px;z-index:9999;background:#400;color:#fff;padding:8px;border-radius:8px;font-size:12px;white-space:pre-wrap;display:none;max-height:35vh;overflow:auto}</style><script>window.__bootOK=true;window.onerror=function(m,u,l,c){var d=document.getElementById("debug");if(d){d.style.display="block";d.textContent="JS错误："+m+"\n第 "+l+" 行，第 "+c+" 列";}};</script></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V3.7</div><div class="sub">主脚本兼容修复版</div><button id="play" type="button" style="background:#39d353;color:#102b16" onclick="this.textContent='按钮已点到';this.style.background='#ffdf4d';var d=document.getElementById('debug');d.style.display='block';d.textContent=window.__startGame?'按钮正常，正在启动…':'主游戏脚本没有加载成功';if(window.__startGame)window.__startGame()">开始游戏 V3.7</button></div></div><div id="debug"></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
-<script>window.onerror=function(m,u,l,c,e){var d=document.getElementById("debug");if(d){d.style.display="block";d.textContent="JS错误："+m+"\n第 "+l+" 行，第 "+c+" 列";}return false;};window.onunhandledrejection=function(e){var d=document.getElementById("debug");if(d){d.style.display="block";d.textContent="Promise错误："+(e.reason&&e.reason.message?e.reason.message:String(e.reason));}};
-
-const R=10,C=8,T=["🍓","🍑","🍌","🫐","🥑"],B=document.querySelector("#board"),S=document.querySelector("#score"),TM=document.querySelector("#time"),BE=document.querySelector("#best"),OV=document.querySelector("#overlay"),CT=document.querySelector("#count");
-let a=[],score=0,left=60,best=0,playing=false,busy=false,timer,down,sel,id=1,lastSwap=null;
-try{best=+(window.localStorage.getItem("m3best")||0)}catch(e){best=0}
-BE.textContent=best;
-const sleep=m=>new Promise(r=>setTimeout(r,m)),K=(r,c)=>r*C+c,RC=k=>({r:Math.floor(k/C),c:k%C}),rnd=()=>T[Math.random()*T.length|0],inside=(r,c)=>r>=0&&r<R&&c>=0&&c<C;
-function make(type,r,c,special=""){return{id:id++,type,r,c,special}}
-function swap(p,q){let x=a[p.r][p.c];a[p.r][p.c]=a[q.r][q.c];a[q.r][q.c]=x;for(let z of [p,q])if(a[z.r][z.c]){a[z.r][z.c].r=z.r;a[z.r][z.c].c=z.c}}
-function scan(){
- let groups=[],all=new Set;
- for(let r=0;r<R;r++){let st=0;for(let c=1;c<=C;c++)if(c==C||!a[r][c]||!a[r][st]||a[r][c].type!=a[r][st].type){if(a[r][st]&&c-st>=3){let g=[];for(let x=st;x<c;x++){g.push(K(r,x));all.add(K(r,x))}groups.push({dir:"H",cells:g})}st=c}}
- for(let c=0;c<C;c++){let st=0;for(let r=1;r<=R;r++)if(r==R||!a[r][c]||!a[st][c]||a[r][c].type!=a[st][c].type){if((a[st]&&a[st][c])&&r-st>=3){let g=[];for(let x=st;x<r;x++){g.push(K(x,c));all.add(K(x,c))}groups.push({dir:"V",cells:g})}st=r}}
- return{groups,all}
-}
-function moves(){let o=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let [dr,dc] of [[0,1],[1,0]]){let q={r:r+dr,c:c+dc};if(!inside(q.r,q.c))continue;if(a[r][c].special||a[q.r][q.c].special){o.push([{r,c},q]);continue}swap({r,c},q);let ok=scan().all.size;swap({r,c},q);if(ok)o.push([{r,c},q])}return o}
-function initial(){let tries=0;do{a=Array.from({length:R},()=>Array(C));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let x;do{x=rnd()}while((c>1&&a[r][c-1].type==x&&a[r][c-2].type==x)||(r>1&&a[r-1][c].type==x&&a[r-2][c].type==x));a[r][c]=make(x,r,c)}tries++}while(!moves().length&&tries<30)}
-function seedSpecials(){let spots=[[2,2,"bomb"],[2,5,"starH"],[6,2,"starV"],[6,5,"heart"]];for(let [r,c,s] of spots){a[r][c].special=s}render()}
-function cls(o){return "cell"+(o.special?" special "+o.special:"")}
-function render(born=[]){let old=new Map([...B.querySelectorAll(".cell")].map(e=>[+e.dataset.id,e]));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let o=a[r][c];if(!o)continue,e=old.get(o.id);if(!e){e=document.createElement("div");e.dataset.id=o.id;e.innerHTML='<div class="fruit"></div>';B.append(e)}else old.delete(o.id);e.className=cls(o)+(born.includes(o.id)?" born":"")+(sel&&sel.r==r&&sel.c==c?" selected":"");e.querySelector(".fruit").textContent=o.special?"":o.type;e.dataset.r=r;e.dataset.c=c;e.style.transform="translate("+c*100+"%,"+r*100+"%)"}old.forEach(e=>e.remove())}
-function wave(dir,r,c){let z=document.createElement("i");z.className="wave "+(dir=="H"?"h":"v");if(dir=="H")z.style.top=((r+.5)*10)+"%";else z.style.left=((c+.5)*12.5)+"%";B.append(z);setTimeout(()=>z.remove(),330)}
-function praise(n){if(n<2)return;let z=document.createElement("div");z.className="float";z.textContent=n>=4?"UNBELIEVABLE!":n>=3?"PERFECT!":"GREAT!";B.append(z);setTimeout(()=>z.remove(),800)}
-function add3x3(set,r,c){for(let y=r-1;y<=r+1;y++)for(let x=c-1;x<=c+1;x++)if(inside(y,x))set.add(K(y,x))}
-function addLine(set,dir,r,c,wide=1){if(dir=="H"){for(let y=Math.max(0,r-Math.floor(wide/2));y<=Math.min(R-1,r+Math.floor(wide/2));y++)for(let x=0;x<C;x++)set.add(K(y,x));wave("H",r,c)}else{for(let x=Math.max(0,c-Math.floor(wide/2));x<=Math.min(C-1,c+Math.floor(wide/2));x++)for(let y=0;y<R;y++)set.add(K(y,x));wave("V",r,c)}}
-function expandSpecials(set){
- let q=[...set],seen=new Set;
- while(q.length){let k=q.shift();if(seen.has(k))continue;seen.add(k);let {r,c}=RC(k),o=(a[r]&&a[r][c]);if(!(o&&o.special))continue;let before=set.size;if(o.special=="bomb")add3x3(set,r,c);if(o.special=="starH")addLine(set,"H",r,c);if(o.special=="starV")addLine(set,"V",r,c);if(o.special=="heart"){for(let y=0;y<R;y++)for(let x=0;x<C;x++)if(a[y][x]&&a[y][x].type==o.type)set.add(K(y,x))}if(set.size>before)for(let x of set)if(!seen.has(x))q.push(x)}
-}
-function chooseCreate(m){
- let cross=null;
- for(let i=0;i<m.groups.length;i++)for(let j=i+1;j<m.groups.length;j++)if(m.groups[i].dir!=m.groups[j].dir){let z=m.groups[i].cells.find(k=>m.groups[j].cells.includes(k));if(z!=null){cross=z;break}}
- if(cross!=null){let p=RC(cross);return{r:p.r,c:p.c,special:"bomb",type:a[p.r][p.c].type}}
- let g5=m.groups.find(g=>g.cells.length>=5);if(g5){let k=(lastSwap&&g5.cells.includes(K(lastSwap.r,lastSwap.c)))?K(lastSwap.r,lastSwap.c):g5.cells[Math.floor(g5.cells.length/2)],p=RC(k);return{...p,special:"heart",type:a[p.r][p.c].type}}
- let g4=m.groups.find(g=>g.cells.length==4);if(g4){let k=(lastSwap&&g4.cells.includes(K(lastSwap.r,lastSwap.c)))?K(lastSwap.r,lastSwap.c):g4.cells[1],p=RC(k);return{...p,special:g4.dir=="H"?"starH":"starV",type:a[p.r][p.c].type}}
- return null
-}
-async function removeSet(set,create=null){
- if(create)set.delete(K(create.r,create.c));expandSpecials(set);let els=[];for(let k of set){let {r,c}=RC(k),o=(a[r]&&a[r][c]);if(!o)continue;let e=B.querySelector('[data-id="'+o.id+'"]');if(e){e.classList.add("pop");els.push(e)}}score+=set.size*2;S.textContent=score;await sleep(260);for(let k of set){let {r,c}=RC(k);a[r][c]=null}if(create)a[create.r][create.c]=make(create.type,create.r,create.c,create.special);render();await gravity()
-}
-async function gravity(){for(let c=0;c<C;c++){let w=R-1;for(let r=R-1;r>=0;r--)if(a[r][c]){if(w!=r){a[w][c]=a[r][c];a[r][c]=null}a[w][c].r=w;a[w][c].c=c;w--}}render();await sleep(210);let born=[];for(let c=0;c<C;c++)for(let r=0;r<R;r++)if(!a[r][c]){let o=make(rnd(),r,c);a[r][c]=o;born.push(o.id)}render(born);await sleep(270)}
-async function resolve(){let chain=0;while(true){let m=scan();if(!m.all.size)break;chain++;praise(chain);let cr=chooseCreate(m);await removeSet(new Set(m.all),cr);lastSwap=null}if(!moves().length){initial();render()}}
-async function combo(p,q){
- let A=a[p.r][p.c],D=a[q.r][q.c],sa=A.special,sd=D.special,set=new Set([K(p.r,p.c),K(q.r,q.c)]);
- if(sa=="heart"&&sd=="heart"){for(let r=0;r<R;r++)for(let c=0;c<C;c++)set.add(K(r,c));for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(a[r][c])a[r][c].special="heart";render();await sleep(420)}
- else if(sa=="heart"||sd=="heart"){let heart=sa=="heart"?A:D,other=heart===A?D:A;if(other.special){let kind=other.special,count=8,spots=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(!a[r][c].special&&a[r][c]!==heart)spots.push({r,c});for(let i=0;i<count&&spots.length;i++){let n=Math.random()*spots.length|0,z=spots.splice(n,1)[0];a[z.r][z.c].special=kind;set.add(K(z.r,z.c))}render();await sleep(300);expandSpecials(set)}else{for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(a[r][c].type==other.type)set.add(K(r,c))}}
- else if((sa=="bomb"&&(sd&&sd.startsWith("star")))||(sd=="bomb"&&(sa&&sa.startsWith("star")))){let bomb=sa=="bomb"?A:D,star=bomb===A?D:A;addLine(set,star.special=="starH"?"H":"V",bomb.r,bomb.c,3)}
- else{expandSpecials(set)}
- await removeSet(set);await resolve()
-}
-async function trySwap(p,q){if(!playing||busy||Math.abs(p.r-q.r)+Math.abs(p.c-q.c)!=1)return;busy=true;sel=null;let beforeA=a[p.r][p.c],beforeD=a[q.r][q.c];swap(p,q);render();await sleep(190);let A=a[p.r][p.c],D=a[q.r][q.c];if(beforeA.special||beforeD.special){await combo(p,q)}else{lastSwap=q;if(scan().all.size)await resolve();else{swap(p,q);render();await sleep(190)}}busy=false}
-B.addEventListener("pointerdown",e=>{let x=e.target.closest(".cell");if(!x||busy||!playing)return;e.preventDefault();down={r:+x.dataset.r,c:+x.dataset.c,x:e.clientX,y:e.clientY};sel={r:down.r,c:down.c};render();B.setPointerCapture?.(e.pointerId)});
-B.addEventListener("pointermove",e=>{if(!down||busy)return;let dx=e.clientX-down.x,dy=e.clientY-down.y,th=B.clientWidth/C*.24;if(Math.max(Math.abs(dx),Math.abs(dy))<th)return;let p={r:down.r,c:down.c},q={r:p.r+(Math.abs(dy)>Math.abs(dx)?Math.sign(dy):0),c:p.c+(Math.abs(dx)>=Math.abs(dy)?Math.sign(dx):0)};down=null;if(inside(q.r,q.c))trySwap(p,q)});
-B.addEventListener("pointerup",()=>{down=null;sel=null;render()});
-async function start(){clearInterval(timer);playing=false;busy=true;OV.style.display="none";score=0;left=60;S.textContent=0;TM.textContent=60;TM.classList.remove("low");initial();render();for(let n=3;n>=1;n--){CT.textContent=n;CT.style.animation="none";CT.offsetHeight;CT.style.animation="count .7s ease both";await sleep(720)}CT.textContent="";playing=true;busy=false;timer=setInterval(()=>{if(!playing)return;TM.textContent=--left;if(left<=10)TM.classList.add("low");if(left<=0)end()},1000)}
-function end(){playing=false;clearInterval(timer);if(score>best){best=score;try{window.localStorage.setItem("m3best",best)}catch(e){}BE.textContent=best}OV.innerHTML='<div class="big">时间到！</div><div class="sub">本局得分：'+score+'<br>最高分：'+best+'</div><button id="again">再来一局</button>';OV.style.display="flex";document.querySelector("#again").onclick=start}
-window.__startGame=start;document.querySelector("#restart").onclick=start;document.querySelector("#test").onclick=()=>{if(!playing||busy)return;seedSpecials()};document.querySelector("#hint").onclick=()=>{if(!playing||busy)return;let m=moves()[0];if(m){sel=m[0];render();setTimeout(()=>{sel=null;render()},700)}};
+#debug{position:fixed;left:8px;right:8px;bottom:76px;z-index:9999;background:#400;color:#fff;padding:8px;border-radius:8px;font-size:12px;white-space:pre-wrap;display:none;max-height:35vh;overflow:auto}</style><script>window.__bootOK=true;window.onerror=function(m,u,l,c){var d=document.getElementById("debug");if(d){d.style.display="block";d.textContent="JS错误："+m+"\n第 "+l+" 行，第 "+c+" 列";}};</script></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V3.8</div><div class="sub">基础引擎重构版</div><button id="play" type="button" style="background:#39d353;color:#102b16" onclick="this.textContent='按钮已点到';this.style.background='#ffdf4d';var d=document.getElementById('debug');d.style.display='block';d.textContent=window.__startGame?'按钮正常，正在启动…':'主游戏脚本没有加载成功';if(window.__startGame)window.__startGame()">开始游戏 V3.8</button></div></div><div id="debug"></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+<script>
+(function(){
+var R=10,C=8,T=["🍓","🍑","🍌","🫐","🥑"],board=document.getElementById("board"),scoreEl=document.getElementById("score"),timeEl=document.getElementById("time"),overlay=document.getElementById("overlay"),countEl=document.getElementById("count");
+var grid=[],score=0,left=60,timer=null,playing=false,down=null;
+function rnd(){return T[Math.floor(Math.random()*T.length)]}
+function init(){grid=[];for(var r=0;r<R;r++){grid[r]=[];for(var c=0;c<C;c++){var x=rnd();while((c>1&&grid[r][c-1]===x&&grid[r][c-2]===x)||(r>1&&grid[r-1][c]===x&&grid[r-2][c]===x))x=rnd();grid[r][c]=x}}}
+function draw(){board.innerHTML="";for(var r=0;r<R;r++)for(var c=0;c<C;c++){var e=document.createElement("div");e.className="cell";e.setAttribute("data-r",r);e.setAttribute("data-c",c);e.style.transform="translate("+(c*100)+"%,"+(r*100)+"%)";var f=document.createElement("div");f.className="fruit";f.textContent=grid[r][c];e.appendChild(f);board.appendChild(e)}}
+function scan(){var hit=[];for(var i=0;i<R*C;i++)hit[i]=false;for(var r=0;r<R;r++){var s=0;for(var c=1;c<=C;c++){if(c===C||grid[r][c]!==grid[r][s]){if(c-s>=3)for(var x=s;x<c;x++)hit[r*C+x]=true;s=c}}}for(var c2=0;c2<C;c2++){var s2=0;for(var r2=1;r2<=R;r2++){if(r2===R||grid[r2][c2]!==grid[s2][c2]){if(r2-s2>=3)for(var y=s2;y<r2;y++)hit[y*C+c2]=true;s2=r2}}}return hit}
+function any(hit){for(var i=0;i<hit.length;i++)if(hit[i])return true;return false}
+function swap(r1,c1,r2,c2){var t=grid[r1][c1];grid[r1][c1]=grid[r2][c2];grid[r2][c2]=t}
+function fall(hit){var n=0;for(var c=0;c<C;c++){var vals=[];for(var r=R-1;r>=0;r--)if(!hit[r*C+c])vals.push(grid[r][c]);for(var rr=R-1,k=0;rr>=0;rr--,k++)grid[rr][c]=k<vals.length?vals[k]:rnd()}for(var i=0;i<hit.length;i++)if(hit[i])n++;score+=n*2;scoreEl.textContent=score}
+function resolve(done){var hit=scan();if(!any(hit)){draw();if(done)done();return}var cells=board.querySelectorAll(".cell");for(var i=0;i<hit.length;i++)if(hit[i]&&cells[i])cells[i].className+=" pop";setTimeout(function(){fall(hit);draw();setTimeout(function(){resolve(done)},220)},260)}
+function trySwap(r1,c1,r2,c2){if(!playing)return;if(r2<0||r2>=R||c2<0||c2>=C)return;swap(r1,c1,r2,c2);draw();setTimeout(function(){var hit=scan();if(any(hit)){resolve()}else{swap(r1,c1,r2,c2);draw()}},180)}
+function start(){if(timer)clearInterval(timer);playing=false;score=0;left=60;scoreEl.textContent="0";timeEl.textContent="60";overlay.style.display="none";init();draw();var n=3;countEl.textContent=n;var cd=setInterval(function(){n--;if(n>0){countEl.textContent=n}else{clearInterval(cd);countEl.textContent="";playing=true;timer=setInterval(function(){left--;timeEl.textContent=left;if(left<=0){clearInterval(timer);playing=false;overlay.innerHTML='<div class="big">时间到！</div><div class="sub">本局得分：'+score+'</div><button type="button" onclick="window.__startGame()">再来一局</button>';overlay.style.display="flex"}},1000)}},700)}
+window.__startGame=start;
+board.addEventListener("touchstart",function(e){if(!playing)return;var el=e.target;while(el&&el!==board&&!el.getAttribute("data-r"))el=el.parentNode;if(!el||el===board)return;var t=e.touches[0];down={r:+el.getAttribute("data-r"),c:+el.getAttribute("data-c"),x:t.clientX,y:t.clientY};e.preventDefault()},{passive:false});
+board.addEventListener("touchend",function(e){if(!down||!playing)return;var t=e.changedTouches[0],dx=t.clientX-down.x,dy=t.clientY-down.y,r2=down.r,c2=down.c;if(Math.abs(dx)>Math.abs(dy))c2+=dx>0?1:-1;else r2+=dy>0?1:-1;var d=down;down=null;trySwap(d.r,d.c,r2,c2);e.preventDefault()},{passive:false});
+document.getElementById("restart").onclick=start;
+document.getElementById("test").onclick=function(){var d=document.getElementById("debug");d.style.display="block";d.textContent="基础游戏脚本运行正常";};
+document.getElementById("hint").onclick=function(){};
+})();
 </script></body></html>
