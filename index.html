@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V4.6</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V4.7</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -26,7 +26,7 @@
 .heart .fruit:after{content:"♥";font-size:45px;line-height:1;background:conic-gradient(from 20deg,#ff4242,#ffd94a,#55e87c,#3edcff,#7858ff,#ff55bc,#ff4242);-webkit-background-clip:text;color:transparent;-webkit-text-stroke:2px #fff9;filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 9px #79a8ff)}
 .wave{position:absolute;z-index:15;pointer-events:none;background:#fff9;box-shadow:0 0 16px #fff,0 0 28px #7df;animation:wave .3s ease-out forwards}.wave.h{left:0;width:100%;height:8%;transform:translateY(-50%)}.wave.v{top:0;height:100%;width:10%;transform:translateX(-50%)}@keyframes wave{0%{opacity:0;filter:blur(10px)}35%{opacity:1}100%{opacity:0;filter:blur(1px)}}
 #debug{display:none!important;visibility:hidden!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}</style><script>window.__bootOK=true;window.onerror=function(){return false;};</script><style>
-/* V4.6 special artwork: matched to user's reference screenshots */
+/* V4.7 special artwork: matched to user's reference screenshots */
 .cell.special .fruit{background-image:none!important;overflow:visible}
 .cell.special .fruit:before{position:absolute;inset:5%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 5px #a7d7ff) drop-shadow(0 0 9px #815cff)}
 .cell.special.bomb .fruit:before{content:"";border-radius:46% 54% 52% 48%;background:radial-gradient(circle at 28% 25%,#b990ff 0 9%,transparent 10%),radial-gradient(circle at 40% 35%,#8e46d8 0 35%,#5d20aa 62%,#321369 100%);box-shadow:inset -7px -7px 10px #36127d,inset 6px 5px 8px #d6a4ff,0 0 8px #b25cff}
@@ -38,10 +38,30 @@
 .cell.special.starV .fruit:after{content:"↕"}
 .cell.pop .fruit{animation:videoPop 190ms cubic-bezier(.2,.75,.25,1) forwards}
 @keyframes videoPop{0%{transform:scale(1);opacity:1;filter:brightness(1) drop-shadow(0 3px 2px #0007)}45%{transform:scale(1.16);opacity:1;filter:brightness(1.45) drop-shadow(0 0 7px #fff)}100%{transform:scale(.2);opacity:0;filter:brightness(1.8)}}
-</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V4.6</div><div class="sub">音乐启动修正版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+</style><style>
+/* V4.7: closer to recorded game's compact dark-wood board */
+html,body{background:radial-gradient(ellipse at 50% 5%,#705035 0,#342117 38%,#1b100b 100%)}
+#app{max-width:500px;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}
+.top{height:72px;margin:2px 8px 8px;border:3px solid #3b2113;border-radius:17px;background:linear-gradient(180deg,#85562f 0,#68401f 52%,#503019 100%);box-shadow:inset 0 2px 0 #b97d48,inset 0 -4px 8px #351c0d,0 6px 13px #0008}
+.label{font-size:14px;color:#e9d4b8}.value{font-size:29px;letter-spacing:.5px}
+#wrap{align-items:flex-start;padding-top:4px}
+#board{width:min(94vw,448px);border:7px solid #342015;border-radius:9px;background:#3a2418;box-shadow:inset 0 0 0 3px #a16d3e,inset 0 0 22px #140b07,0 7px 18px #000a}
+.cell:before{inset:3%;border-radius:9px;background:linear-gradient(145deg,#493022,#322016);box-shadow:inset 0 1px 2px #694630,inset 0 -2px 3px #1d110b}
+.fruit{width:79%;height:79%;filter:drop-shadow(0 3px 2px #0008)}
+.controls{height:67px;padding:8px 7px 0;gap:10px}.controls button{border-radius:14px;font-size:17px;background:linear-gradient(#efa13a,#c75f18);box-shadow:inset 0 2px #ffd58a,0 4px #6c310f}
+</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V4.7</div><div class="sub">原游戏风格调整版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
 (function(){var audioCtx=null,musicTimer=null,musicStep=0;
-function startMusic(){try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audioCtx)audioCtx=new AC();if(audioCtx.state=="suspended")audioCtx.resume();if(musicTimer)return;function note(){if(!audioCtx)return;var seq=[261.63,329.63,392,329.63,293.66,349.23,440,349.23],o=audioCtx.createOscillator(),g=audioCtx.createGain(),t=audioCtx.currentTime;o.type="sine";o.frequency.value=seq[musicStep%seq.length];g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.025,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.32);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+.34);musicStep++}note();musicTimer=setInterval(note,420)}catch(e){}}
+function startMusic(){try{
+var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+if(!audioCtx)audioCtx=new AC();if(audioCtx.state=="suspended")audioCtx.resume();if(musicTimer)return;
+var lead=[523.25,659.25,783.99,659.25,587.33,698.46,880,783.99,659.25,587.33,523.25,587.33,659.25,783.99,698.46,587.33];
+var bass=[130.81,130.81,146.83,146.83,110,110,130.81,130.81];
+function tone(freq,when,dur,type,vol){var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,when);g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(vol,when+.025);g.gain.exponentialRampToValueAtTime(.0001,when+dur);o.connect(g);g.connect(audioCtx.destination);o.start(when);o.stop(when+dur+.03)}
+function tick(){if(!audioCtx)return;var t=audioCtx.currentTime,n=musicStep%lead.length;tone(lead[n],t,.31,"triangle",.045);tone(lead[n]/2,t,.27,"sine",.018);if(n%2==0)tone(bass[Math.floor(n/2)%bass.length],t,.5,"triangle",.022);if(n%4==2)tone(lead[n]*1.5,t+.06,.18,"sine",.012);musicStep++}
+tick();musicTimer=setInterval(tick,360);
+}catch(err){}}
+
 
 var R=10,C=8,T=["🍓","🍑","🍌","🫐","🥑"],board=document.getElementById("board"),scoreEl=document.getElementById("score"),timeEl=document.getElementById("time"),overlay=document.getElementById("overlay"),countEl=document.getElementById("count");
 var grid=[],spec=[],score=0,left=60,timer=null,playing=false,down=null;
