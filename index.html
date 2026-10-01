@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.1</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -39,7 +39,7 @@ function scan(){
  return{groups,all}
 }
 function moves(){let o=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let [dr,dc] of [[0,1],[1,0]]){let q={r:r+dr,c:c+dc};if(!inside(q.r,q.c))continue;if(a[r][c].special||a[q.r][q.c].special){o.push([{r,c},q]);continue}swap({r,c},q);let ok=scan().all.size;swap({r,c},q);if(ok)o.push([{r,c},q])}return o}
-function initial(){a=Array.from({length:R},()=>Array(C));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let x;do{x=rnd()}while((c>1&&a[r][c-1].type==x&&a[r][c-2].type==x)||(r>1&&a[r-1][c].type==x&&a[r-2][c].type==x));a[r][c]=make(x,r,c)}if(!moves().length)initial()}
+function initial(){let tries=0;do{a=Array.from({length:R},()=>Array(C));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let x;do{x=rnd()}while((c>1&&a[r][c-1].type==x&&a[r][c-2].type==x)||(r>1&&a[r-1][c].type==x&&a[r-2][c].type==x));a[r][c]=make(x,r,c)}tries++}while(!moves().length&&tries<30)}
 function seedSpecials(){let spots=[[2,2,"bomb"],[2,5,"starH"],[6,2,"starV"],[6,5,"heart"]];for(let [r,c,s] of spots){a[r][c].special=s}render()}
 function cls(o){return "cell"+(o.special?" special "+o.special:"")}
 function render(born=[]){let old=new Map([...B.querySelectorAll(".cell")].map(e=>[+e.dataset.id,e]));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let o=a[r][c];if(!o)continue,e=old.get(o.id);if(!e){e=document.createElement("div");e.dataset.id=o.id;e.innerHTML='<div class="fruit"></div>';B.append(e)}else old.delete(o.id);e.className=cls(o)+(born.includes(o.id)?" born":"")+(sel&&sel.r==r&&sel.c==c?" selected":"");e.querySelector(".fruit").textContent=o.special?"":o.type;e.dataset.r=r;e.dataset.c=c;e.style.transform="translate("+c*100+"%,"+r*100+"%)"}old.forEach(e=>e.remove())}
@@ -78,5 +78,5 @@ B.addEventListener("pointermove",e=>{if(!down||busy)return;let dx=e.clientX-down
 B.addEventListener("pointerup",()=>{down=null;sel=null;render()});
 async function start(){clearInterval(timer);playing=false;busy=true;OV.style.display="none";score=0;left=60;S.textContent=0;TM.textContent=60;TM.classList.remove("low");initial();render();for(let n=3;n>=1;n--){CT.textContent=n;CT.style.animation="none";CT.offsetHeight;CT.style.animation="count .7s ease both";await sleep(720)}CT.textContent="";playing=true;busy=false;timer=setInterval(()=>{if(!playing)return;TM.textContent=--left;if(left<=10)TM.classList.add("low");if(left<=0)end()},1000)}
 function end(){playing=false;clearInterval(timer);if(score>best){best=score;localStorage.m3best=best;BE.textContent=best}OV.innerHTML='<div class="big">时间到！</div><div class="sub">本局得分：'+score+'<br>最高分：'+best+'</div><button id="again">再来一局</button>';OV.style.display="flex";document.querySelector("#again").onclick=start}
-document.querySelector("#play").onclick=start;document.querySelector("#restart").onclick=start;document.querySelector("#test").onclick=()=>{if(!playing||busy)return;seedSpecials()};document.querySelector("#hint").onclick=()=>{if(!playing||busy)return;let m=moves()[0];if(m){sel=m[0];render();setTimeout(()=>{sel=null;render()},700)}};
+document.querySelector("#play").addEventListener("click",start);document.querySelector("#restart").onclick=start;document.querySelector("#test").onclick=()=>{if(!playing||busy)return;seedSpecials()};document.querySelector("#hint").onclick=()=>{if(!playing||busy)return;let m=moves()[0];if(m){sel=m[0];render();setTimeout(()=>{sel=null;render()},700)}};
 </script></body></html>
