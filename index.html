@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.2</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V3.3</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -28,14 +28,16 @@
 </style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习</div><div class="sub">滑动水果 · 60秒挑战</div><button id="play">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
 const R=10,C=8,T=["🍓","🍑","🍌","🫐","🥑"],B=document.querySelector("#board"),S=document.querySelector("#score"),TM=document.querySelector("#time"),BE=document.querySelector("#best"),OV=document.querySelector("#overlay"),CT=document.querySelector("#count");
-let a=[],score=0,left=60,best=+(localStorage.m3best||0),playing=false,busy=false,timer,down,sel,id=1,lastSwap=null;BE.textContent=best;
+let a=[],score=0,left=60,best=0,playing=false,busy=false,timer,down,sel,id=1,lastSwap=null;
+try{best=+(window.localStorage.getItem("m3best")||0)}catch(e){best=0}
+BE.textContent=best;
 const sleep=m=>new Promise(r=>setTimeout(r,m)),K=(r,c)=>r*C+c,RC=k=>({r:Math.floor(k/C),c:k%C}),rnd=()=>T[Math.random()*T.length|0],inside=(r,c)=>r>=0&&r<R&&c>=0&&c<C;
 function make(type,r,c,special=""){return{id:id++,type,r,c,special}}
 function swap(p,q){let x=a[p.r][p.c];a[p.r][p.c]=a[q.r][q.c];a[q.r][q.c]=x;for(let z of [p,q])if(a[z.r][z.c]){a[z.r][z.c].r=z.r;a[z.r][z.c].c=z.c}}
 function scan(){
  let groups=[],all=new Set;
  for(let r=0;r<R;r++){let st=0;for(let c=1;c<=C;c++)if(c==C||!a[r][c]||!a[r][st]||a[r][c].type!=a[r][st].type){if(a[r][st]&&c-st>=3){let g=[];for(let x=st;x<c;x++){g.push(K(r,x));all.add(K(r,x))}groups.push({dir:"H",cells:g})}st=c}}
- for(let c=0;c<C;c++){let st=0;for(let r=1;r<=R;r++)if(r==R||!a[r][c]||!a[st][c]||a[r][c].type!=a[st][c].type){if(a[st]?.[c]&&r-st>=3){let g=[];for(let x=st;x<r;x++){g.push(K(x,c));all.add(K(x,c))}groups.push({dir:"V",cells:g})}st=r}}
+ for(let c=0;c<C;c++){let st=0;for(let r=1;r<=R;r++)if(r==R||!a[r][c]||!a[st][c]||a[r][c].type!=a[st][c].type){if((a[st]&&a[st][c])&&r-st>=3){let g=[];for(let x=st;x<r;x++){g.push(K(x,c));all.add(K(x,c))}groups.push({dir:"V",cells:g})}st=r}}
  return{groups,all}
 }
 function moves(){let o=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let [dr,dc] of [[0,1],[1,0]]){let q={r:r+dr,c:c+dc};if(!inside(q.r,q.c))continue;if(a[r][c].special||a[q.r][q.c].special){o.push([{r,c},q]);continue}swap({r,c},q);let ok=scan().all.size;swap({r,c},q);if(ok)o.push([{r,c},q])}return o}
@@ -49,7 +51,7 @@ function add3x3(set,r,c){for(let y=r-1;y<=r+1;y++)for(let x=c-1;x<=c+1;x++)if(in
 function addLine(set,dir,r,c,wide=1){if(dir=="H"){for(let y=Math.max(0,r-Math.floor(wide/2));y<=Math.min(R-1,r+Math.floor(wide/2));y++)for(let x=0;x<C;x++)set.add(K(y,x));wave("H",r,c)}else{for(let x=Math.max(0,c-Math.floor(wide/2));x<=Math.min(C-1,c+Math.floor(wide/2));x++)for(let y=0;y<R;y++)set.add(K(y,x));wave("V",r,c)}}
 function expandSpecials(set){
  let q=[...set],seen=new Set;
- while(q.length){let k=q.shift();if(seen.has(k))continue;seen.add(k);let {r,c}=RC(k),o=a[r]?.[c];if(!o?.special)continue;let before=set.size;if(o.special=="bomb")add3x3(set,r,c);if(o.special=="starH")addLine(set,"H",r,c);if(o.special=="starV")addLine(set,"V",r,c);if(o.special=="heart"){for(let y=0;y<R;y++)for(let x=0;x<C;x++)if(a[y][x]?.type==o.type)set.add(K(y,x))}if(set.size>before)for(let x of set)if(!seen.has(x))q.push(x)}
+ while(q.length){let k=q.shift();if(seen.has(k))continue;seen.add(k);let {r,c}=RC(k),o=(a[r]&&a[r][c]);if(!(o&&o.special))continue;let before=set.size;if(o.special=="bomb")add3x3(set,r,c);if(o.special=="starH")addLine(set,"H",r,c);if(o.special=="starV")addLine(set,"V",r,c);if(o.special=="heart"){for(let y=0;y<R;y++)for(let x=0;x<C;x++)if(a[y][x]?.type==o.type)set.add(K(y,x))}if(set.size>before)for(let x of set)if(!seen.has(x))q.push(x)}
 }
 function chooseCreate(m){
  let cross=null;
@@ -60,7 +62,7 @@ function chooseCreate(m){
  return null
 }
 async function removeSet(set,create=null){
- if(create)set.delete(K(create.r,create.c));expandSpecials(set);let els=[];for(let k of set){let {r,c}=RC(k),o=a[r]?.[c];if(!o)continue;let e=B.querySelector('[data-id="'+o.id+'"]');if(e){e.classList.add("pop");els.push(e)}}score+=set.size*2;S.textContent=score;await sleep(260);for(let k of set){let {r,c}=RC(k);a[r][c]=null}if(create)a[create.r][create.c]=make(create.type,create.r,create.c,create.special);render();await gravity()
+ if(create)set.delete(K(create.r,create.c));expandSpecials(set);let els=[];for(let k of set){let {r,c}=RC(k),o=(a[r]&&a[r][c]);if(!o)continue;let e=B.querySelector('[data-id="'+o.id+'"]');if(e){e.classList.add("pop");els.push(e)}}score+=set.size*2;S.textContent=score;await sleep(260);for(let k of set){let {r,c}=RC(k);a[r][c]=null}if(create)a[create.r][create.c]=make(create.type,create.r,create.c,create.special);render();await gravity()
 }
 async function gravity(){for(let c=0;c<C;c++){let w=R-1;for(let r=R-1;r>=0;r--)if(a[r][c]){if(w!=r){a[w][c]=a[r][c];a[r][c]=null}a[w][c].r=w;a[w][c].c=c;w--}}render();await sleep(210);let born=[];for(let c=0;c<C;c++)for(let r=0;r<R;r++)if(!a[r][c]){let o=make(rnd(),r,c);a[r][c]=o;born.push(o.id)}render(born);await sleep(270)}
 async function resolve(){let chain=0;while(true){let m=scan();if(!m.all.size)break;chain++;praise(chain);let cr=chooseCreate(m);await removeSet(new Set(m.all),cr);lastSwap=null}if(!moves().length){initial();render()}}
@@ -68,7 +70,7 @@ async function combo(p,q){
  let A=a[p.r][p.c],D=a[q.r][q.c],sa=A.special,sd=D.special,set=new Set([K(p.r,p.c),K(q.r,q.c)]);
  if(sa=="heart"&&sd=="heart"){for(let r=0;r<R;r++)for(let c=0;c<C;c++)set.add(K(r,c));for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(a[r][c])a[r][c].special="heart";render();await sleep(420)}
  else if(sa=="heart"||sd=="heart"){let heart=sa=="heart"?A:D,other=heart===A?D:A;if(other.special){let kind=other.special,count=8,spots=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(!a[r][c].special&&a[r][c]!==heart)spots.push({r,c});for(let i=0;i<count&&spots.length;i++){let n=Math.random()*spots.length|0,z=spots.splice(n,1)[0];a[z.r][z.c].special=kind;set.add(K(z.r,z.c))}render();await sleep(300);expandSpecials(set)}else{for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(a[r][c].type==other.type)set.add(K(r,c))}}
- else if((sa=="bomb"&&sd?.startsWith("star"))||(sd=="bomb"&&sa?.startsWith("star"))){let bomb=sa=="bomb"?A:D,star=bomb===A?D:A;addLine(set,star.special=="starH"?"H":"V",bomb.r,bomb.c,3)}
+ else if((sa=="bomb"&&(sd&&sd.startsWith("star")))||(sd=="bomb"&&(sa&&sa.startsWith("star")))){let bomb=sa=="bomb"?A:D,star=bomb===A?D:A;addLine(set,star.special=="starH"?"H":"V",bomb.r,bomb.c,3)}
  else{expandSpecials(set)}
  await removeSet(set);await resolve()
 }
@@ -77,6 +79,6 @@ B.addEventListener("pointerdown",e=>{let x=e.target.closest(".cell");if(!x||busy
 B.addEventListener("pointermove",e=>{if(!down||busy)return;let dx=e.clientX-down.x,dy=e.clientY-down.y,th=B.clientWidth/C*.24;if(Math.max(Math.abs(dx),Math.abs(dy))<th)return;let p={r:down.r,c:down.c},q={r:p.r+(Math.abs(dy)>Math.abs(dx)?Math.sign(dy):0),c:p.c+(Math.abs(dx)>=Math.abs(dy)?Math.sign(dx):0)};down=null;if(inside(q.r,q.c))trySwap(p,q)});
 B.addEventListener("pointerup",()=>{down=null;sel=null;render()});
 async function start(){clearInterval(timer);playing=false;busy=true;OV.style.display="none";score=0;left=60;S.textContent=0;TM.textContent=60;TM.classList.remove("low");initial();render();for(let n=3;n>=1;n--){CT.textContent=n;CT.style.animation="none";CT.offsetHeight;CT.style.animation="count .7s ease both";await sleep(720)}CT.textContent="";playing=true;busy=false;timer=setInterval(()=>{if(!playing)return;TM.textContent=--left;if(left<=10)TM.classList.add("low");if(left<=0)end()},1000)}
-function end(){playing=false;clearInterval(timer);if(score>best){best=score;localStorage.m3best=best;BE.textContent=best}OV.innerHTML='<div class="big">时间到！</div><div class="sub">本局得分：'+score+'<br>最高分：'+best+'</div><button id="again">再来一局</button>';OV.style.display="flex";document.querySelector("#again").onclick=start}
+function end(){playing=false;clearInterval(timer);if(score>best){best=score;try{window.localStorage.setItem("m3best",best)}catch(e){}BE.textContent=best}OV.innerHTML='<div class="big">时间到！</div><div class="sub">本局得分：'+score+'<br>最高分：'+best+'</div><button id="again">再来一局</button>';OV.style.display="flex";document.querySelector("#again").onclick=start}
 document.querySelector("#play").addEventListener("click",start);document.querySelector("#restart").onclick=start;document.querySelector("#test").onclick=()=>{if(!playing||busy)return;seedSpecials()};document.querySelector("#hint").onclick=()=>{if(!playing||busy)return;let m=moves()[0];if(m){sel=m[0];render();setTimeout(()=>{sel=null;render()},700)}};
 </script></body></html>
