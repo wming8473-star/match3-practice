@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.2.2</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#21150f"><title>消消乐练习 V6.3</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 20%,#69472b,#23160f 70%);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:#fff;touch-action:none}
 #app{height:100%;max-width:520px;margin:auto;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
@@ -26,7 +26,7 @@
 .heart .fruit:after{content:"♥";font-size:45px;line-height:1;background:conic-gradient(from 20deg,#ff4242,#ffd94a,#55e87c,#3edcff,#7858ff,#ff55bc,#ff4242);-webkit-background-clip:text;color:transparent;-webkit-text-stroke:2px #fff9;filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 9px #79a8ff)}
 .wave{position:absolute;z-index:15;pointer-events:none;background:#fff9;box-shadow:0 0 16px #fff,0 0 28px #7df;animation:wave .3s ease-out forwards}.wave.h{left:0;width:100%;height:8%;transform:translateY(-50%)}.wave.v{top:0;height:100%;width:10%;transform:translateX(-50%)}@keyframes wave{0%{opacity:0;filter:blur(10px)}35%{opacity:1}100%{opacity:0;filter:blur(1px)}}
 #debug{display:none!important;visibility:hidden!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}</style><script>window.__bootOK=true;window.onerror=function(){return false;};</script><style>
-/* V6.2.2 special artwork: matched to user's reference screenshots */
+/* V6.3 special artwork: matched to user's reference screenshots */
 .cell.special .fruit{background-image:none!important;overflow:visible}
 .cell.special .fruit:before{position:absolute;inset:5%;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 5px #a7d7ff) drop-shadow(0 0 9px #815cff)}
 .cell.special.bomb .fruit:before{content:"";border-radius:46% 54% 52% 48%;background:radial-gradient(circle at 28% 25%,#b990ff 0 9%,transparent 10%),radial-gradient(circle at 40% 35%,#8e46d8 0 35%,#5d20aa 62%,#321369 100%);box-shadow:inset -7px -7px 10px #36127d,inset 6px 5px 8px #d6a4ff,0 0 8px #b25cff}
@@ -39,7 +39,7 @@
 .cell.pop .fruit{animation:videoPop 190ms cubic-bezier(.2,.75,.25,1) forwards}
 @keyframes videoPop{0%{transform:scale(1);opacity:1;filter:brightness(1) drop-shadow(0 3px 2px #0007)}45%{transform:scale(1.16);opacity:1;filter:brightness(1.45) drop-shadow(0 0 7px #fff)}100%{transform:scale(.2);opacity:0;filter:brightness(1.8)}}
 </style><style>
-/* V6.2.2: closer to recorded game's compact dark-wood board */
+/* V6.3: closer to recorded game's compact dark-wood board */
 html,body{background:radial-gradient(ellipse at 50% 5%,#705035 0,#342117 38%,#1b100b 100%)}
 #app{max-width:500px;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))}
 .top{height:72px;margin:2px 8px 8px;border:3px solid #3b2113;border-radius:17px;background:linear-gradient(180deg,#85562f 0,#68401f 52%,#503019 100%);box-shadow:inset 0 2px 0 #b97d48,inset 0 -4px 8px #351c0d,0 6px 13px #0008}
@@ -50,7 +50,7 @@ html,body{background:radial-gradient(ellipse at 50% 5%,#705035 0,#342117 38%,#1b
 .fruit{width:79%;height:79%;filter:drop-shadow(0 3px 2px #0008)}
 .controls{height:67px;padding:8px 7px 0;gap:10px}.controls button{border-radius:14px;font-size:17px;background:linear-gradient(#efa13a,#c75f18);box-shadow:inset 0 2px #ffd58a,0 4px #6c310f}
 </style><style>
-/* V6.2.2 — dimensions/colors rebuilt from the supplied 512×1108 gameplay recording */
+/* V6.3 — dimensions/colors rebuilt from the supplied 512×1108 gameplay recording */
 html,body{background:#f6d889!important}
 #app{max-width:512px!important;padding:0!important;background:
 linear-gradient(90deg,#fff5cf 0 3%,#f3b743 3% 4%,#fff8dc 4% 8%,transparent 8% 92%,#fff8dc 92% 96%,#f3b743 96% 97%,#fff5cf 97%),
@@ -71,7 +71,7 @@ linear-gradient(#bcecff 0 27%,#f6c38f 27% 76%,#8c4c2f 76% 100%)!important;positi
 .controls button{font-size:16px!important;border-radius:12px!important}
 #overlay{background:#1a100ccf!important}
 </style><style>
-/* V6.2.2 geometry measured directly from the 512×1108 recording frame */
+/* V6.3 geometry measured directly from the 512×1108 recording frame */
 html,body{background:#f7dca0!important}
 #app{width:min(100vw,512px)!important;max-width:512px!important;aspect-ratio:512/1108!important;height:auto!important;min-height:100vh!important;margin:auto!important;padding:0!important;position:relative!important;overflow:hidden!important;
 background:
@@ -95,7 +95,7 @@ linear-gradient(174deg,transparent 0 77%,#8a4a31 77.2% 100%)!important;opacity:.
 .controls button{font-size:14px!important;border-radius:11px!important}
 #overlay{position:absolute!important;inset:303px 7.6% auto 7.6%!important;height:536px!important;border-radius:13px!important}
 </style><style>
-/* V6.2.2 viewport-fit fix: preserve recording proportions without clipping in iPhone in-app browser */
+/* V6.3 viewport-fit fix: preserve recording proportions without clipping in iPhone in-app browser */
 html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 #app{width:min(100vw,512px)!important;height:100dvh!important;min-height:0!important;aspect-ratio:auto!important;position:relative!important}
 .top{height:24.5vh!important}
@@ -107,7 +107,7 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 #overlay{inset:25vh 7.6% 72px 7.6%!important;height:auto!important}
 @supports not (height:100dvh){#app{height:100vh!important}#board{max-height:calc(100vh - 25vh - 82px)!important}}
 </style><style>
-/* V6.2.2 — original fruit artwork extracted from the supplied gameplay recording */
+/* V6.3 — original fruit artwork extracted from the supplied gameplay recording */
 .fruit{background-image:url("assets/original-fruits.webp")!important;background-size:500% 100%!important;background-repeat:no-repeat!important;background-position-y:center!important}
 .fruit[data-f="🍓"]{background-position-x:0%!important}
 .fruit[data-f="🫐"]{background-position-x:25%!important}
@@ -119,7 +119,7 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 .cell:before{inset:2px!important;border-radius:5px!important;background:#2d1c18!important;box-shadow:inset 0 0 0 1px #3e2923!important}
 .fruit{width:88%!important;height:88%!important;filter:none!important}
 </style><style>
-/* V6.2.2 — corrected original-fruit frame mapping and native aspect presentation */
+/* V6.3 — corrected original-fruit frame mapping and native aspect presentation */
 .fruit[data-f="🥑"]{background-position:0% 50%!important}
 .fruit[data-f="🍑"]{background-position:25% 50%!important}
 .fruit[data-f="🍌"]{background-position:50% 50%!important}
@@ -127,7 +127,7 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 .fruit[data-f="🍓"]{background-position:100% 50%!important}
 .fruit{background-size:500% 100%!important;background-repeat:no-repeat!important;width:92%!important;height:92%!important;transform:none!important}
 </style><style>
-/* V6.2.2 emergency display fix: use verified per-fruit files; hide developer controls */
+/* V6.3 emergency display fix: use verified per-fruit files; hide developer controls */
 .controls,#debug{display:none!important}
 .fruit{background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;width:88%!important;height:88%!important}
 .fruit[data-f="🍓"]{background-image:url("fruit-strawberry.svg")!important}
@@ -135,7 +135,16 @@ html,body{width:100%;height:100%;min-height:100%;overflow:hidden!important}
 .fruit[data-f="🍌"]{background-image:url("fruit-banana.svg")!important}
 .fruit[data-f="🫐"]{background-image:url("fruit-blueberry.svg")!important}
 .fruit[data-f="🥑"]{background-image:url("fruit-avocado.svg")!important}
-</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.2.2</div><div class="sub">水果显示修复版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
+</style><style>
+/* V6.3 stable independent fruit layer */
+.controls,#debug{display:none!important}
+.fruit{background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))!important}
+.fruit[data-f="🍓"]{background-image:url("fruit-strawberry.svg")!important;width:91%!important;height:91%!important}
+.fruit[data-f="🍑"]{background-image:url("fruit-peach.svg")!important;width:91%!important;height:91%!important}
+.fruit[data-f="🍌"]{background-image:url("fruit-banana.svg")!important;width:94%!important;height:88%!important}
+.fruit[data-f="🫐"]{background-image:url("fruit-blueberry.svg")!important;width:90%!important;height:90%!important}
+.fruit[data-f="🥑"]{background-image:url("fruit-avocado.svg")!important;width:86%!important;height:94%!important}
+</style></head><body><div id="app"><div class="top"><div class="stat"><div class="label">得分</div><div class="value" id="score">0</div></div><div class="stat"><div class="label">剩余时间</div><div class="value time" id="time">60</div></div><div class="stat"><div class="label">最高分</div><div class="value" id="best">0</div></div></div><div id="wrap"><div id="board"></div><div id="count"></div><div id="overlay"><div class="big">消消乐练习 V6.3</div><div class="sub">独立水果稳定版</div><button id="play" type="button">开始游戏</button></div></div><div class="controls"><button id="restart">重新开始</button><button id="test">特效测试</button><button id="hint">提示</button></div></div>
 <script>
 (function(){var audioCtx=null,musicTimer=null,musicStep=0;
 function startMusic(){try{
